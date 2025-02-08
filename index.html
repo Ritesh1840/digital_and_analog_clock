@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analog + Digital Clock</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #000428, #004e92);
+            background-size: 400% 400%;
+            animation: gradientShift 10s infinite alternate;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .clock {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            border: 10px solid #00e6e6;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 30px #00e6e6, 0 0 60px #00e6e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hand {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-origin: center center;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .number {
+            position: absolute;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
+
+        .hour {
+            color: #ff4d4d;
+            text-shadow: 0 0 15px #ff4d4d;
+        }
+
+        .minute {
+            color: #1e90ff;
+            text-shadow: 0 0 15px #1e90ff;
+        }
+
+        .second {
+            color: #39ff14;
+            text-shadow: 0 0 15px #39ff14;
+        }
+
+        .center-dot {
+            position: absolute;
+            background: white;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 20px #fff, 0 0 40px #00e6e6;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .digital-clock {
+            margin-top: 20px;
+            font-size: 28px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px #00e6e6, 0 0 30px #00e6e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock">
+        <div class="hand" id="hour-hand"></div>
+        <div class="hand" id="minute-hand"></div>
+        <div class="hand" id="second-hand"></div>
+        <div class="center-dot"></div>
+    </div>
+    <div class="digital-clock" id="digitalClock"></div>
+
+    <script>
+        function createRepeatedNumbers(value, colorClass) {
+            let numbers = '';
+            const numberCount = 6;
+            const radius = 130;
+
+            for (let i = 1; i <= numberCount; i++) {
+                const distance = (radius / numberCount) * i;
+                numbers += `<div class="number ${colorClass}" style="
+                    top: calc(50% - ${distance}px);
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                ">${value}</div>`;
+            }
+            return numbers;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const hour = now.getHours() % 12 || 12;
+            const minute = now.getMinutes();
+            const second = now.getSeconds();
+
+            const hourAngle = (hour * 30) + (minute / 2);
+            const minuteAngle = minute * 6;
+            const secondAngle = second * 6;
+
+            const hourHand = document.getElementById('hour-hand');
+            const minuteHand = document.getElementById('minute-hand');
+            const secondHand = document.getElementById('second-hand');
+
+            hourHand.innerHTML = createRepeatedNumbers(hour, 'hour');
+            minuteHand.innerHTML = createRepeatedNumbers(minute, 'minute');
+            secondHand.innerHTML = createRepeatedNumbers(second, 'second');
+
+            hourHand.style.transform = `rotate(${hourAngle}deg)`;
+            minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+            secondHand.style.transform = `rotate(${secondAngle}deg)`;
+
+            document.getElementById('digitalClock').textContent = now.toLocaleTimeString();
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
